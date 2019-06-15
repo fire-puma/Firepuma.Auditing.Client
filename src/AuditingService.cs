@@ -6,6 +6,7 @@ using Firepuma.Api.Abstractions.Errors;
 using Firepuma.Auditing.Abstractions.Requests;
 using Firepuma.Auditing.Abstractions.Responses;
 using Firepuma.MicroServices.Auth;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -13,23 +14,26 @@ namespace Firepuma.Auditing.Client
 {
     public class AuditingService<TActor> : IAuditingService where TActor : IActorIdentity
     {
+        private readonly ILogger<AuditingService<TActor>> _logger;
         private readonly IActorProvider<TActor> _actorProvider;
         private readonly IRemoteIpProvider _remoteIpProvider;
         private readonly IErrorReportingService _errorReportingService;
         private readonly MicroServiceClient _microServiceClient;
 
         public AuditingService(
+            ILogger<AuditingService<TActor>> logger,
             IOptions<AuditingMicroServiceOptions> auditingOptions,
             IActorProvider<TActor> actorProvider,
             IRemoteIpProvider remoteIpProvider,
             IErrorReportingService errorReportingService,
             IMicroServiceTokenProvider microServiceTokenProvider)
         {
+            _logger = logger;
             _actorProvider = actorProvider;
             _remoteIpProvider = remoteIpProvider;
             _errorReportingService = errorReportingService;
 
-            _microServiceClient = new MicroServiceClient(microServiceTokenProvider, new Uri(auditingOptions.Value.ServiceUrl));
+            _microServiceClient = new MicroServiceClient(_logger, microServiceTokenProvider, new Uri(auditingOptions.Value.ServiceUrl));
         }
 
         public string SerializeToJson(object obj)
@@ -47,6 +51,7 @@ namespace Firepuma.Auditing.Client
             try
             {
                 var json = JsonConvert.SerializeObject(obj);
+
                 return json;
             }
             catch (Exception exception)
@@ -54,6 +59,7 @@ namespace Firepuma.Auditing.Client
                 var wrappedException = new Exception(
                     $"Unable to serialize object to json in AuditingService.SerializeToJson, objectType={obj.GetType().FullName}, will use ToString()",
                     exception);
+
                 _errorReportingService.CaptureException(wrappedException);
 
                 return obj.ToString();
@@ -67,6 +73,7 @@ namespace Firepuma.Auditing.Client
             var remoteIp = _remoteIpProvider.GetRemoteIp();
             var oldString = SerializeToJson(addRequest.OldValue);
             var newString = SerializeToJson(addRequest.NewValue);
+
             var auditRecord = new AddAuditRequest(
                 DateTime.Now,
                 new AddAuditRequest.AuditActor(actor.Id, actor.Email, actor.FullName),

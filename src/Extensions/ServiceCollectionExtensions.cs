@@ -3,8 +3,7 @@ using Firepuma.Api.Abstractions.Actor;
 using Firepuma.Api.Abstractions.Errors;
 using Firepuma.Api.Common.Actor;
 using Firepuma.Api.Common.Configure;
-using Firepuma.MicroServices.Auth;
-using Firepuma.MicroServices.Auth.OpenIdConnect;
+using Firepuma.MicroServices.Auth.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,8 +18,7 @@ namespace Firepuma.Auditing.Client.Extensions
             services.AddScoped<IAuditingService, AuditingService<TActor>>();
             services.ConfigureAndValidate<AuditingMicroServiceOptions>(auditingConfigSection.Bind);
 
-            services.AddScoped<IMicroServiceTokenProvider, MicroServiceTokenProvider>();
-            services.ConfigureAndValidate<OpenIdConnectOptions>(tokenProviderConfigSection.Bind);
+            services.AddOpenIdConnectTokenProvider(tokenProviderConfigSection);
 
             services.AddScoped<IRemoteIpProvider, HttpContextRemoteIpProvider>();
 
