@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <PackageReference Include="Firepuma.Api.Abstractions" Version="0.0.4" />
-        <PackageReference Include="Firepuma.Api.Common" Version="0.0.5" />
+        <PackageReference Include="Firepuma.Api.Common" Version="0.0.7" />
         <PackageReference Include="Firepuma.Auditing.Abstractions" Version="0.0.1" />
         <PackageReference Include="Firepuma.MicroServices.Auth" Version="0.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
