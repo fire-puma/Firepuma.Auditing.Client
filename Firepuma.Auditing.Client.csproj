@@ -8,8 +8,8 @@
     <ItemGroup>
         <PackageReference Include="Firepuma.Api.Abstractions" Version="0.0.4" />
         <PackageReference Include="Firepuma.Api.Common" Version="0.0.7" />
-        <PackageReference Include="Firepuma.Auditing.Abstractions" Version="0.0.1" />
-        <PackageReference Include="Firepuma.MicroServices.Auth" Version="0.0.2" />
+        <PackageReference Include="Firepuma.Auditing.Abstractions" Version="0.0.2" />
+        <PackageReference Include="Firepuma.MicroServices.Auth" Version="0.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.4" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />

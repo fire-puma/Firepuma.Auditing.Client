@@ -5,6 +5,7 @@ using Firepuma.Api.Abstractions.Actor;
 using Firepuma.Api.Abstractions.Errors;
 using Firepuma.Auditing.Abstractions.Requests;
 using Firepuma.Auditing.Abstractions.Responses;
+using Firepuma.Auditing.Abstractions.Tenants;
 using Firepuma.MicroServices.Auth;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,7 +27,8 @@ namespace Firepuma.Auditing.Client
             IActorProvider<TActor> actorProvider,
             IRemoteIpProvider remoteIpProvider,
             IErrorReportingService errorReportingService,
-            IMicroServiceTokenProvider microServiceTokenProvider)
+            IMicroServiceTokenProvider microServiceTokenProvider,
+            ITenantNameProviderHolder tenantNameProviderHolder)
         {
             _logger = logger;
             _actorProvider = actorProvider;
@@ -34,6 +36,12 @@ namespace Firepuma.Auditing.Client
             _errorReportingService = errorReportingService;
 
             _microServiceClient = new MicroServiceClient(_logger, microServiceTokenProvider, new Uri(auditingOptions.Value.ServiceUrl));
+
+            var tenantName = tenantNameProviderHolder.Provider.Name;
+            if (tenantName != null)
+            {
+                _microServiceClient.AddDefaultHeaders(new Dictionary<string, string> {{"X-Client-Tenant", tenantName}});
+            }
         }
 
         public string SerializeToJson(object obj)
