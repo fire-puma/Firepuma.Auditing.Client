@@ -15,8 +15,7 @@ namespace Firepuma.Auditing.Client
 {
     public class AuditingService<TActor> : IAuditingService where TActor : IActorIdentity
     {
-        private readonly ILogger<AuditingService<TActor>> _logger;
-        private readonly IActorProvider<TActor> _actorProvider;
+        private readonly IActorProviderHolder<TActor> _actorProviderHolder;
         private readonly IRemoteIpProvider _remoteIpProvider;
         private readonly IErrorReportingService _errorReportingService;
         private readonly MicroServiceClient _microServiceClient;
@@ -24,18 +23,17 @@ namespace Firepuma.Auditing.Client
         public AuditingService(
             ILogger<AuditingService<TActor>> logger,
             IOptions<AuditingMicroServiceOptions> auditingOptions,
-            IActorProvider<TActor> actorProvider,
+            IActorProviderHolder<TActor> actorProviderHolder,
             IRemoteIpProvider remoteIpProvider,
             IErrorReportingService errorReportingService,
             IMicroServiceTokenProvider microServiceTokenProvider,
             ITenantNameProviderHolder tenantNameProviderHolder)
         {
-            _logger = logger;
-            _actorProvider = actorProvider;
+            _actorProviderHolder = actorProviderHolder;
             _remoteIpProvider = remoteIpProvider;
             _errorReportingService = errorReportingService;
 
-            _microServiceClient = new MicroServiceClient(_logger, microServiceTokenProvider, new Uri(auditingOptions.Value.ServiceUrl));
+            _microServiceClient = new MicroServiceClient(logger, microServiceTokenProvider, new Uri(auditingOptions.Value.ServiceUrl));
 
             var tenantName = tenantNameProviderHolder.Provider.Name;
             if (tenantName != null)
@@ -76,7 +74,7 @@ namespace Firepuma.Auditing.Client
 
         public async Task<AuditRecordResponse> Add(IAudit addRequest)
         {
-            var actor = await _actorProvider.GetActor();
+            var actor = await _actorProviderHolder.Provider.GetActor();
 
             var remoteIp = _remoteIpProvider.GetRemoteIp();
             var oldString = SerializeToJson(addRequest.OldValue);

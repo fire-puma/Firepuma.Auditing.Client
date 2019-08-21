@@ -36,9 +36,9 @@ namespace Firepuma.Auditing.Client.Extensions
                 {
                     throw new Exception($"Please register IErrorReportingService service before calling {nameof(AddAuditingServiceClient)}");
                 }
-                if (scope.ServiceProvider.GetService<IActorProvider<TActor>>() == null)
+                if (scope.ServiceProvider.GetService<IActorProviderHolder<TActor>>() == null)
                 {
-                    throw new Exception($"Please register IActorProvider<TActor> service before calling {nameof(AddAuditingServiceClient)}");
+                    throw new Exception($"Please register IActorProviderHolder<TActor> service before calling {nameof(AddAuditingServiceClient)}");
                 }
 
                 if (scope.ServiceProvider.GetService<ITenantNameProviderHolder>() == null)
