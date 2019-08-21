@@ -3,6 +3,7 @@ using Firepuma.Api.Abstractions.Actor;
 using Firepuma.Api.Abstractions.Errors;
 using Firepuma.Api.Common.Actor;
 using Firepuma.Api.Common.Configure;
+using Firepuma.Api.Common.Services;
 using Firepuma.Auditing.Abstractions.Tenants;
 using Firepuma.Auditing.Client.Tenants;
 using Firepuma.MicroServices.Auth.Extensions;
@@ -24,6 +25,7 @@ namespace Firepuma.Auditing.Client.Extensions
             services.AddOpenIdConnectTokenProvider(tokenProviderConfigSection);
 
             services.AddScoped<IRemoteIpProvider, HttpContextRemoteIpProvider>();
+            services.AddScoped<IRemoteIpProviderHolder, RemoteIpProviderHolder>();
 
             if (!isMultiTenant)
             {
