@@ -15,7 +15,6 @@ namespace Firepuma.Auditing.Client
 {
     public class AuditingService<TActor> : IAuditingService where TActor : IActorIdentity
     {
-        private readonly IActorProviderHolder<TActor> _actorProviderHolder;
         private readonly IRemoteIpProviderHolder _remoteIpProviderHolder;
         private readonly IErrorReportingService _errorReportingService;
         private readonly MicroServiceClient _microServiceClient;
@@ -23,13 +22,11 @@ namespace Firepuma.Auditing.Client
         public AuditingService(
             ILogger<AuditingService<TActor>> logger,
             IOptions<AuditingMicroServiceOptions> auditingOptions,
-            IActorProviderHolder<TActor> actorProviderHolder,
             IRemoteIpProviderHolder remoteIpProviderHolder,
             IErrorReportingService errorReportingService,
             IMicroServiceTokenProvider microServiceTokenProvider,
             ITenantNameProviderHolder tenantNameProviderHolder)
         {
-            _actorProviderHolder = actorProviderHolder;
             _remoteIpProviderHolder = remoteIpProviderHolder;
             _errorReportingService = errorReportingService;
 
@@ -72,10 +69,8 @@ namespace Firepuma.Auditing.Client
             }
         }
 
-        public async Task<AuditRecordResponse> Add(IAudit addRequest)
+        public async Task<AuditRecordResponse> Add(IActorIdentity actor, IAudit addRequest)
         {
-            var actor = await _actorProviderHolder.Provider.GetActor();
-
             var remoteIp = _remoteIpProviderHolder.Provider.GetRemoteIp();
             var oldString = SerializeToJson(addRequest.OldValue);
             var newString = SerializeToJson(addRequest.NewValue);
